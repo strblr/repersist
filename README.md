@@ -4,14 +4,20 @@ If you're looking for an **easy**, **fast**, **lightweight** and **idiomatic** w
 
 By default, each state change is automatically persisted in the `localStorage` of the client's browser which allows the library to **persist** and **restore** states across browser sessions, tabs, machine reboots, etc.
 
+## Installation
+
+```
+npm install repersist
+```
+
 ## Guideline
 
-Let's say you're creating a React app with multiple themes and a global search input. You want the associated states to be managed globally and to be persistent. When you refresh the tab, nothing's lost. If the client's laptop runs out of battery and he has to charge and reboot, nothing's lost either. A whole (arbitrarily complex) working session can be restored just by reopening the tab.
+Let's say you're creating a React app with multiple themes and a global search input. You want the associated states to be managed *globally*and to be *persistent* When you refresh the tab, nothing's lost. If the client's laptop runs out of battery and he has to charge and reboot, nothing's lost either. A whole (arbitrarily complex) working session can be restored just by reopening the tab.
 
 You'll start by defining your store in a **config file** :
 
 ```javascript
-import repersist from 'repersist2'
+import repersist from 'repersist'
 
 const { Provider, Consumer } = repersist({
   // define a default state
@@ -42,6 +48,33 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
+```
+
+Well, that's it ! You're good to go :
+
+```jsx
+import { Consumer } from './storeConfig'
+
+const SearchField = () => (
+  <Consumer>
+  {({ search }, { typeSearch }) =>
+    <input value={search} onChange={e => typeSearch(e.target.value)}/>
+  }
+  </Consumer>
+)
+```
+
+**Or**, using the hook version :
+
+```jsx
+import { useStore } from './storeConfig'
+
+export default () => {
+  const [{ search }, { typeSearch }] = useStore()
+  return (
+    <input value={search} onChange={e => typeSearch(e.target.value)}/>
+  )
+}
 ```
 
 ## API
