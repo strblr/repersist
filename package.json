@@ -2,7 +2,7 @@
   "name": "repersist2",
   "version": "1.0.7",
   "author": "Strebler",
-  "description": "A lightweight & easy-to-use library to manage React states that persist across sessions, tabs, machine reboots, etc.",
+  "description": "A lightweight & easy-to-use library to manage React states that persist across browser sessions, tabs, machine reboots, etc.",
   "license": "MIT",
   "repository": {
     "type": "git",
