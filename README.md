@@ -64,17 +64,27 @@ const SearchField = () => (
 )
 ```
 
-**Or**, using the hook version :
+**Or**, using the *hook* version (don't forget to retrieve and export `useStore` from your config file) :
 
 ```jsx
 import { useStore } from './storeConfig'
 
-export default () => {
+const SearchField = () => {
   const [{ search }, { typeSearch }] = useStore()
   return (
     <input value={search} onChange={e => typeSearch(e.target.value)}/>
   )
 }
+```
+
+**Or**, using the higher-order component (*HOC*) version :
+
+```jsx
+import { withStore } from './storeConfig'
+
+const SearchField = withStore()(({ search, typeSearch }) => (
+  <input value={search} onChange={e => typeSearch(e.target.value)}/>
+))
 ```
 
 ## API
