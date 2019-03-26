@@ -47,7 +47,7 @@ ReactDOM.render(
     <App/>
   </Provider>,
   document.getElementById('root')
-);
+)
 ```
 
 Well, that's it ! You're good to go :
@@ -86,6 +86,8 @@ const SearchField = withStore()(({ search, typeSearch }) => (
   <input value={search} onChange={e => typeSearch(e.target.value)}/>
 ))
 ```
+
+Now, when you try and refresh the page, **nothing is lost**. In the background, each time a new application instance is created, `repersist` hydrates the store which the last serialized version.
 
 ## API
 
