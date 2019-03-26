@@ -6,7 +6,7 @@ By default, each state change is automatically persisted in the `localStorage` o
 
 ## Guideline
 
-Let's say you're creating a React app with multiple themes and a global search input. You want the associated states to be managed globally and to be persistent, meaning for instance that when you refresh the tab, nothing's lost. If the client's laptop runs out of battery and he has to charge and reboot, nothing's lost either.
+Let's say you're creating a React app with multiple themes and a global search input. You want the associated states to be managed globally and to be persistent. When you refresh the tab, nothing's lost. If the client's laptop runs out of battery and he has to charge and reboot, nothing's lost either. A whole (arbitrarily complex) working session can be restored just by reopening the tab.
 
 You'll start by defining your store in a **config file** :
 
