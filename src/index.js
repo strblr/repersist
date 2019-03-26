@@ -4,33 +4,16 @@ import isFunction from 'lodash/isFunction'
 import mapValues from 'lodash/mapValues'
 
 export default ({
-  /* The default state being used as initial state if nothing's found in the
-     storage or if what was found fails the integrity check */
-  defaultState: defaultState_ = () => {},
-
-  /* The actions are a set of functions which dictate how an old state can be
-     replaced by a newer state */
+  init: init_ = () => {},
   actions: actions_ = () => {},
-
-  /* The storage being used to persist the state */
   storage = typeof window !== 'undefined' && window.localStorage,
-
-  /* The storage key being used to persist the state */
   storageKey = 'repersist-store',
-
-  /* The serialization function */
   serialize = JSON.stringify,
-
-  /* The deserialization function */
   deserialize = JSON.parse,
-
-  /* The integrity check function */
   integrity = () => true,
-
-  /* A custom loader to pass through when a persisted state was found */
   load = identity
 } = {}) => {
-  const defaultState = isFunction(defaultState_) ? defaultState_ : () => defaultState_
+  const init = isFunction(init_) ? init_ : () => init_
   const actions = isFunction(actions_) ? actions_ : () => actions_
 
   const StateContext = createContext()
@@ -56,24 +39,29 @@ export default ({
       }
       catch(_) {
         // If the storage recovery failed, we use the default state
-        this.state = defaultState(props)
+        this.state = init(props)
       }
       // We persist our initial state anyway to ensure consistency
       storage && storage.setItem(storageKey, serialize(this.state))
 
+      // We create an extension of setState which ALSO serializes each new state
+      // to the storage
+      this.setStateAndSave = state => this.setState(state, () => {
+        storage && storage.setItem(storageKey, serialize(this.state))
+      })
+
       // Provided actions go through this special loader in order to call
-      // setState if they were to return a non-undefined value
-      this.actions = mapValues(actions(this.setState.bind(this), props),
+      // setStateAndSave if they were to return a non-undefined value
+      this.actions = mapValues(actions(this.setStateAndSave.bind(this), props),
         action => async (...args) => {
           const newState = await action(...args)
           if(typeof newState !== 'undefined')
-            this.setState(newState)
+            this.setStateAndSave(newState)
         }
       )
     }
 
     render() {
-      // No magic here, both state & actions are just injected in the tree
       return (
         <StateContext.Provider value={this.state}>
           <ActionsContext.Provider value={this.actions}>
@@ -87,22 +75,35 @@ export default ({
   /* The Consumer retrieves state & actions from context and passes them to a
      render prop (props.children) */
 
-  const Consumer = ({ map = identity }) => (
+  const Consumer = ({ map = identity, render, children }) => (
     <StateContext.Consumer>
       {state => (
         <ActionsContext.Consumer>
-          {actions => this.props.children(map(state), actions)}
+          {actions => (render || children)(map(state), actions)}
         </ActionsContext.Consumer>
       )}
     </StateContext.Consumer>
   )
 
+  const ActionsConsumer = ({ render, children }) => (
+    <ActionsContext.Consumer>
+      {actions => (render || children)(actions)}
+    </ActionsContext.Consumer>
+  )
+
   /* This is the HOC version of the consumer */
 
   const withStore = (map = identity) => Comp => props => (
-    <Consumer map={map}>
-      {(state, actions) => <Comp {...props} {...state} {...actions}/>}
-    </Consumer>
+    <Consumer
+      map={map}
+      render={(state, actions) => (
+        <Comp {...props} {...state} {...actions}/>
+      )}
+    />
+  )
+
+  const withActions = Comp => props => (
+    <ActionsConsumer render={actions => <Comp {...props} {...actions}/>}/>
   )
 
   /* This is the hook version of the consumer */
@@ -113,10 +114,15 @@ export default ({
     return [map(state), actions]
   }
 
+  const useActions = () => useContext(ActionsContext)
+
   return {
     Provider,
     Consumer,
+    ActionsConsumer,
     withStore,
-    useStore
+    withActions,
+    useStore,
+    useActions
   }
 }

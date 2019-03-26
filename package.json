@@ -1,7 +1,8 @@
 {
-  "name": "repersist",
-  "version": "1.0.0",
+  "name": "repersist2",
+  "version": "1.0.7",
   "author": "Strebler",
+  "description": "A lightweight & easy-to-use library to manage React states that persist across sessions, tabs, machine reboots, etc.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,18 +14,16 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "react": "^16.8.5"
+    "react": "^16.8.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.4.0",
-    "@babel/preset-react": "^7.0.0",
-    "babel-preset-minify": "^0.5.0"
+    "@babel/preset-react": "^7.0.0"
   },
   "babel": {
     "presets": [
-      "@babel/preset-react",
-      "minify"
+      "@babel/preset-react"
     ],
     "comments": false
   }
