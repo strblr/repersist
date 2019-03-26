@@ -6,9 +6,43 @@ By default, each state change is automatically persisted in the `localStorage` o
 
 ## Guideline
 
-Let's say you're creating a React app with multiple themes, a global search input and a retractable side menu. You want the associated states to be managed globally and to be persistent, meaning for instance that when you refresh the tab, nothing's lost. If the client's computer runs out of battery and he has to charge and reboot, nothing's lost either.
+Let's say you're creating a React app with multiple themes and a global search input. You want the associated states to be managed globally and to be persistent, meaning for instance that when you refresh the tab, nothing's lost. If the client's laptop runs out of battery and he has to charge and reboot, nothing's lost either.
 
-You'll start by defining 
+You'll start by defining your store in a **config file** :
+
+```javascript
+import repersist from 'repersist2'
+
+const { Provider, Consumer } = repersist({
+  // define a default state
+  init: {
+    theme: 'light',
+    search: ''
+  },
+  // define all the possible actions
+  actions: {
+    switchTheme: () => ({ theme }) => ({
+      theme: theme === 'light' ? 'dark' : 'light'
+    }),
+    typeSearch: search => ({ search })
+  }
+})
+
+export { Provider, Consumer }
+```
+
+Then, you will inject your store context in the React tree, for example at toplevel :
+
+```jsx
+import { Provider } from './storeConfig'
+
+ReactDOM.render(
+  <Provider>
+    <App/>
+  </Provider>,
+  document.getElementById('root')
+);
+```
 
 ## API
 
