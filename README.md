@@ -20,11 +20,15 @@ You'll start by defining your store in a **config file** :
 import repersist from 'repersist'
 
 const { Provider, Consumer } = repersist({
+  // define a storage key unique to your app
+  storageKey: 'myappkey',
+  
   // define a default state
   init: {
     theme: 'light',
     search: ''
   },
+  
   // define all the possible actions
   actions: {
     switchTheme: () => ({ theme }) => ({
@@ -87,7 +91,7 @@ const SearchField = withStore()(({ search, typeSearch }) => (
 ))
 ```
 
-Now, when you try and refresh the page, **nothing is lost**. In the background, each time a new application instance is created, `repersist` hydrates the store which the last serialized version.
+Now when you type something and refresh the page, **nothing is lost**. In the background, each time a new application instance is created, `repersist` hydrates the store which the last serialized version.
 
 ## API
 
