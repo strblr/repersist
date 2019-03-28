@@ -247,7 +247,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   )
   ```
   
-  You can pass *any* props your want to your provider, and use them in your `init` and `actions` factories :
+  You can pass *any* props you want to your provider, and use them in your `init` and `actions` factories :
   
   ```jsx
   const { Provider } = repersist({
