@@ -237,10 +237,10 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   const { Provider } = repersist({
     init: props => ({
       value: props.defaultValue,
-      multiple: 0
+      multiple: props.defaultValue * props.factor
     }),
     actions: props => ({
-      setMultiple(value) {
+      setValue(value) {
         const multiple = value * props.factor
         return { value, multiple }
       }
@@ -252,6 +252,75 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   <Provider defaultValue={1} factor={3}>
     <App/>
   </Provider>
+  ```
+- `Consumer`
+  - **Type** : React Component
+  - **Role** : The React context consumer for your store. Following the [render prop pattern](https://reactjs.org/docs/render-props.html) you can access your state and your actions within your components using the `children` or the `render` prop. This component will rerender on state changes. Example (using the `children` prop) :
+  ```jsx
+  <Consumer>
+  {({ counter }, { increment }) =>
+    <div>
+      <p>{counter}</p>
+      <button onClick={increment}>Increment me</button>
+    </div>
+  }
+  </Consumer>
+  ```
+- `ActionsConsumer`
+  - **Type** : React Component
+  - **Role** : The React context consumer for your actions. Useful if you just want to get your action functions and not rerender on state changes. Example :
+  ```jsx
+  <ActionsConsumer>
+  {({ increment }) =>
+    <button onClick={increment}>Increment me</button>
+  }
+  </ActionsConsumer>
+  ```
+- `withStore`
+  - **Type** : React higher-order component
+  - **Argument** :
+    - *(Optional)* A map function, mapping your current state into whatever props your want
+  - **Role** : Same as `<Consumer>` but using the [higher-order component pattern](https://reactjs.org/docs/higher-order-components.html). Example :
+  ```jsx
+  const Component = withStore()(({ counter, increment }) => (
+    <div>
+      <p>{counter}</p>
+      <button onClick={increment}>Increment me</button>
+    </div>
+  ))
+  ```
+- `withActions`
+  - **Type** : React higher-order component
+  - **Role** : Same as `<ActionsConsumer>` but using the [higher-order component pattern](https://reactjs.org/docs/higher-order-components.html). Example :
+  ```jsx
+  const Component = withActions(({ increment }) => (
+    <button onClick={increment}>Increment me</button>
+  ))
+  ```
+- `useStore`
+  - **Type** : React hook
+  - **Argument** :
+    - *(Optional)* A map function, mapping your current state into whatever props your want
+  - **Role** : Same as `<Consumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
+  ```jsx
+  const Component = () => {
+    const [{ counter }, { increment }] = useStore()
+    return (
+      <div>
+        <p>{counter}</p>
+        <button onClick={increment}>Increment me</button>
+      </div>
+    )
+  }
+  ```
+- `useActions`
+  - **Type** : React hook
+  - **Role** : Same as `<ActionsConsumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
+  ```jsx
+  const Component = () => {
+    const [{ increment }] = useActions()
+    return <button onClick={increment}>Increment me</button>
+  }
   ```
 
 ## Upcoming features
