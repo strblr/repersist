@@ -115,7 +115,7 @@ const {
 
 #### Options
 - `init`
-  - **Type** : `Object <key, any> | (props: Object) => Object <key, any>`
+  - **Type** : `Object | (props: Object) => Object`
   - **Default value** : `() => ({})`
   - **Role** : The default state to initialize the store when no persisted state was found, or when the integrity check of the persisted state failed. This can be an object of properties like the classic Component's `state` object, *or* an object factory taking the `props` passed to `<Provider>` as argument.
 - `actions`
