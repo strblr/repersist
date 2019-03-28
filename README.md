@@ -182,7 +182,7 @@ const {
 - `storage`
   - **Type** : Anything as long as it has `getItem` and `setItem` properties (see [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage))
   - **Default value** : `window.localStorage`
-  - **Role** : The persistent storage manager.
+  - **Role** : The persistent storage manager. Set it to `null` if you don't want to persist your store at all.
 - `storageKey`
   - **Type** : `String`
   - **Default value** : `"repersist-store"`
@@ -223,6 +223,7 @@ const {
     // ...
   }
   ```
+  
 - `load`
   - **Type** : `Object => Object`
   - **Default value**: `object => object` ([lodash](https://lodash.com/docs/4.17.11#identity)'s `identity` function, actually)
@@ -245,6 +246,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     document.getElementById('root')
   )
   ```
+  
   You can pass any props your want to your provider, and use them in your `init` and `actions` factories :
   
   ```jsx
@@ -267,12 +269,14 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     <App/>
   </Provider>
   ```
+  
 - `Consumer`
   - **Type** : React Component
   - **Props** :
     - `map` : *(Optional)* A map function, mapping your current state into whatever props your want
     - `render` or `children` : `(state: Object, actions: Object) => React tree`
   - **Role** : The React context consumer for your store. Following the [render prop pattern](https://reactjs.org/docs/render-props.html) you can access your state and your actions within your components using the `children` or the `render` prop. This component will rerender on state changes. Example (using the `children` prop) :
+  
   ```jsx
   <Consumer>
   {({ counter }, { increment }) =>
@@ -283,11 +287,13 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   }
   </Consumer>
   ```
+  
 - `ActionsConsumer`
   - **Type** : React Component
   - **Props** :
     - `render` or `children` : `(actions: Object) => React tree`
   - **Role** : The React context consumer for your actions. Useful if you just want to get your action functions and not rerender on state changes. Example :
+  
   ```jsx
   <ActionsConsumer>
   {({ increment }) =>
@@ -295,11 +301,13 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   }
   </ActionsConsumer>
   ```
+  
 - `withStore`
   - **Type** : React higher-order component
   - **Arguments** :
     - *(Optional)* A map function, mapping your current state into whatever props your want
   - **Role** : Same as `<Consumer>` but using the [higher-order component pattern](https://reactjs.org/docs/higher-order-components.html). Example :
+  
   ```jsx
   const Component = withStore()(({ counter, increment }) => (
     <div>
@@ -308,19 +316,23 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     </div>
   ))
   ```
+  
 - `withActions`
   - **Type** : React higher-order component
   - **Role** : Same as `<ActionsConsumer>` but using the [higher-order component pattern](https://reactjs.org/docs/higher-order-components.html). Example :
+  
   ```jsx
   const Component = withActions(({ increment }) => (
     <button onClick={increment}>Increment me</button>
   ))
   ```
+  
 - `useStore`
   - **Type** : React hook
   - **Arguments** :
     - *(Optional)* A map function, mapping your current state into whatever props your want
   - **Role** : Same as `<Consumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
+  
   ```jsx
   const Component = () => {
     const [{ counter }, { increment }] = useStore()
@@ -332,9 +344,11 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     )
   }
   ```
+  
 - `useActions`
   - **Type** : React hook
   - **Role** : Same as `<ActionsConsumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
+  
   ```jsx
   const Component = () => {
     const [{ increment }] = useActions()
