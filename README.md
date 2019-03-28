@@ -113,7 +113,7 @@ const {
 } = repersist({ ...options })
 ```
 
-Options are :
+#### Options
 - `init`
   - **Type** : `Object <key, any> | (props: Object) => Object <key, any>`
   - **Default value** : `() => ({})`
@@ -154,7 +154,7 @@ Options are :
     ```
     - They can update the state programatically using the state setter function passed as second argument to the actions factory. Example :
     ```javascript
-    actions: (props, setState) => {
+    actions: (props, setState) => ({
       setMultiple(value) {
         const multiple = value * props.factor
         setState({ multiple })
@@ -169,7 +169,7 @@ Options are :
           () => console.log('Counter decremented')
         )
       }
-    }
+    })
     ```
 - `storage`
   - **Type** : Anything as long as it has `getItem` and `setItem` properties (see [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage))
@@ -177,7 +177,7 @@ Options are :
   - **Role** : The persistent storage manager.
 - `storageKey`
   - **Type** : `String`
-  - **Default value** : `repersist-store`
+  - **Default value** : `"repersist-store"`
   - **Role** : The key being used to persist your store into the storage manager. This is crucial. Other `repersist` stores using the same key will overwrite the location. Choose a key that is unique to your app and unique to your store (if you have more than one).
 - `serialize`
   - **Type** : `Object => String`
@@ -213,6 +213,45 @@ Options are :
     }
     // ...
   }
+  ```
+- `load`
+  - **Type** : `Object => Object`
+  - **Default value**: `object => object` ([lodash](https://lodash.com/docs/4.17.11#identity)'s `identity` function, actually)
+  - **Role** : If you want to apply some changes to your retrieved persisted state before setting it as your initial state, this is the place to do it. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state.
+
+#### Return value
+The `repersist` builder returns a bunch of elements that you will use throughout your app to manipulate your store :
+
+- `Provider`
+  - **Role** : The React context provider for your store. The store will be accessible throughout the entire child React tree of your provider, so using it at root-level might be a good idea :
+  ```jsx
+  ReactDOM.render(
+    <Provider>
+      <App/>
+    </Provider>,
+    document.getElementById('root')
+  )
+  ```
+  You can pass any props your want to your provider, and use them in your `init` and `actions` factories :
+  ```jsx
+  const { Provider } = repersist({
+    init: props => ({
+      value: props.defaultValue,
+      multiple: 0
+    }),
+    actions: props => ({
+      setMultiple(value) {
+        const multiple = value * props.factor
+        return { value, multiple }
+      }
+    })
+  })
+  
+  // ...
+  
+  <Provider defaultValue={1} factor={3}>
+    <App/>
+  </Provider>
   ```
 
 ## Upcoming features
