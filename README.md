@@ -191,6 +191,7 @@ const {
   - **Type** : `Object => Boolean`
   - **Default value** : `() => true`
   - **Role** : Checks the integrity of your retrieved persisted state. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state. This is crucial because you can never be sure that a persisted state won't be altered outside of your app. Also it can help ensuring consistency between different versions of your app and thus potentially different state schemas. You could use tools like [json-schema](https://github.com/kriszyp/json-schema) or [ajv](https://github.com/epoberezkin/ajv) to check persisted states against schema definitions. For example :
+  
   ```javascript
   import jsonSchema from 'jsonschema'
   
@@ -236,6 +237,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   )
   ```
   You can pass any props your want to your provider, and use them in your `init` and `actions` factories :
+  
   ```jsx
   const { Provider } = repersist({
     init: props => ({
