@@ -41,7 +41,7 @@ const { Provider, Consumer } = repersist({
 export { Provider, Consumer }
 ```
 
-Then, you will inject your store context in the React tree, for example at toplevel :
+Then, you will inject your store into the React tree's context, for example at toplevel :
 
 ```jsx
 import { Provider } from './storeConfig'
@@ -178,15 +178,15 @@ const {
 - `storageKey`
   - **Type** : `String`
   - **Default value** : `"repersist-store"`
-  - **Role** : The key being used to persist your store into the storage manager. This is crucial. Other `repersist` stores using the same key will overwrite the location. Choose a key that is unique to your app and unique to your store (if you have more than one).
+  - **Role** : The key being used to persist your store into the storage manager. This is crucial if you have multiple apps [on a same domain](https://stackoverflow.com/a/4201249/11153160) and/or multiple stores in the same app. Other `repersist` stores using the same key may overwrite the location. Choose a key that is unique to your app and unique to your store.
 - `serialize`
   - **Type** : `Object => String`
   - **Default value** : `JSON.stringify`
-  - **Role** : The serialize function. When your data is being persisted, this is the function being called with the current state as first argument and whose return value is being passed to `storage.setItem`.
+  - **Role** : The serialize function. Before any actual persistence, your state is serialized into a string. This is the function which does the conversion.
 - `deserialize`
   - **Type** : `String => Object`
   - **Default value** : `JSON.parse`
-  - **Role** : The deserialize function. When your persisted data is being retrieved, this is the function it passes through before being assigned as your initial state. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state.
+  - **Role** : The deserialize function. When your persisted data is being retrieved, it's just a string. This function converts it back to an actual state object, used as your initial state. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state.
 - `integrity`
   - **Type** : `Object => Boolean`
   - **Default value** : `() => true`
