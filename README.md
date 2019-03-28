@@ -273,7 +273,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
 - `Consumer`
   - **Type** : React Component
   - **Props** :
-    - `map` : *(Optional)* A map function, mapping your current state into whatever props your want
+    - `map` : *(Optional)* A map function, mapping your current state into whatever object your want
     - `render` or `children` : `(state: Object, actions: Object) => React tree`
   - **Role** : The React context consumer for your store. Following the [render prop pattern](https://reactjs.org/docs/render-props.html) you can access your state and your actions within your components using the `children` or the `render` prop. This component will rerender on state changes. Example (using the `children` prop) :
   
@@ -330,7 +330,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
 - `useStore`
   - **Type** : React hook
   - **Arguments** :
-    - *(Optional)* A map function, mapping your current state into whatever props your want
+    - *(Optional)* A map function, mapping your current state into whatever object you want
   - **Role** : Same as `<Consumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
   
   ```jsx
