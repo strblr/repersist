@@ -4,8 +4,8 @@ import isFunction from 'lodash/isFunction'
 import mapValues from 'lodash/mapValues'
 
 export default ({
-  init: init_ = () => {},
-  actions: actions_ = () => {},
+  init: init_ = () => ({}),
+  actions: actions_ = () => ({}),
   storage = typeof window !== 'undefined' && window.localStorage,
   storageKey = 'repersist-store',
   serialize = JSON.stringify,
@@ -32,10 +32,13 @@ export default ({
           throw new Error()
         // If there was one, we try to deserialize it and check its integrity
         stored = deserialize(stored)
-        if(!integrity(stored))
+        if(!stored || !integrity(stored))
           throw new Error()
         // The fetched state can go through a custom loader
-        this.state = load(stored)
+        stored = load(stored)
+        if(!stored)
+          throw new Error()
+        this.state = stored
       }
       catch(_) {
         // If the storage recovery failed, we use the default state
@@ -46,16 +49,18 @@ export default ({
 
       // We create an extension of setState which ALSO serializes each new state
       // to the storage
-      this.setStateAndSave = state => this.setState(state, () => {
+      this.setStateAndSave = (state, callback) => this.setState(state, () => {
         storage && storage.setItem(storageKey, serialize(this.state))
+        if(callback)
+          callback()
       })
 
       // Provided actions go through this special loader in order to call
       // setStateAndSave if they were to return a non-undefined value
-      this.actions = mapValues(actions(this.setStateAndSave.bind(this), props),
+      this.actions = mapValues(actions(props, this.setStateAndSave.bind(this)),
         action => async (...args) => {
           const newState = await action(...args)
-          if(typeof newState !== 'undefined')
+          if(newState)
             this.setStateAndSave(newState)
         }
       )

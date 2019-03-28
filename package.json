@@ -1,6 +1,6 @@
 {
-  "name": "repersist2",
-  "version": "1.0.7",
+  "name": "repersist",
+  "version": "1.0.1",
   "author": "Strebler",
   "description": "A lightweight & easy-to-use library to manage React states that persist across browser sessions, tabs, machine reboots, etc.",
   "license": "MIT",
