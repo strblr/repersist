@@ -147,7 +147,7 @@ Options are :
     },
     actions: {
       increment() {
-        console.log('Counter incremented')
+        console.log('Counter will be incremented')
         return ({ counter }) => ({ counter: counter + 1 })
       }
     }
@@ -171,6 +171,49 @@ Options are :
       }
     }
     ```
+- `storage`
+  - **Type** : Anything as long as it has `getItem` and `setItem` properties (see [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage))
+  - **Default value** : `window.localStorage`
+  - **Role** : The persistent storage manager.
+- `storageKey`
+  - **Type** : `String`
+  - **Default value** : `repersist-store`
+  - **Role** : The key being used to persist your store into the storage manager. This is crucial. Other `repersist` stores using the same key will overwrite the location. Choose a key that is unique to your app and unique to your store (if you have more than one).
+- `serialize`
+  - **Type** : `Object => String`
+  - **Default value** : `JSON.stringify`
+  - **Role** : The serialize function. When your data is being persisted, this is the function being called with the current state as first argument and whose return value is being passed to `storage.setItem`.
+- `deserialize`
+  - **Type** : `String => Object`
+  - **Default value** : `JSON.parse`
+  - **Role** : The deserialize function. When your persisted data is being retrieved, this is the function it passes through before being assigned as your initial state. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state.
+- `integrity`
+  - **Type** : `Object => Boolean`
+  - **Default value** : `() => true`
+  - **Role** : Checks the integrity of your retrieved persisted state. If this function throws an exception or returns a falsey value, the default `init` state is used as your initial state. This is crucial because you can never be sure that a persisted state won't be altered outside of your app. Also it can help ensuring consistency between different versions of your app and thus potentially different state schemas. You could use tools like [json-schema](https://github.com/kriszyp/json-schema) or [ajv](https://github.com/epoberezkin/ajv) to check persisted states against schema definitions. For example :
+  ```javascript
+  import jsonSchema from 'jsonschema'
+  
+  const options = {
+    integrity(state) {
+      const validator = new jsonSchema.Validator()
+      const schema = {
+        type: 'object',
+        properties: {
+          searchInput: {
+            type: 'string',
+            required: true
+          },
+          userToken: {
+            type: 'string'
+          }
+        }
+      }
+      return validator.validate(state, schema).valid
+    }
+    // ...
+  }
+  ```
 
 ## Upcoming features
 
