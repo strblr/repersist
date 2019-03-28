@@ -122,16 +122,8 @@ const {
   - **Type** : `Object <key, Function> | (props: Object, setState: Function) => Object <key, Function>`
   - **Default value** : `() => ({})`
   - **Role** : The actions to be performed on the store. This can either be an object containing specific functions (like `toggleMenu`, `changePage`, `swapTheme`, etc.), *or* an object factory taking the `props` passed to `<Provider>` and a state setter function as arguments. The arguments of these action functions are the arguments you pass when you call them. Action functions can do several things :
-    - They can be `async`. Example :
-    ```javascript
-    actions: {
-      async fetchData() {
-        const data = await fetch('someurl')
-        return { data }
-      }
-    }
-    ```
     - They can return an object which will be *merged* into the current state. Example :
+    
     ```javascript
     actions: {
       typeSearch(search) {
@@ -140,7 +132,9 @@ const {
       }
     }
     ```
+    
     - They can return a *function* taking the current state as argument and returning an object which will be *merged* into the current state. Example :
+    
     ```javascript
     init: {
       counter: 0
@@ -152,7 +146,9 @@ const {
       }
     }
     ```
+    
     - They can update the state programatically using the state setter function passed as second argument to the actions factory. Example :
+    
     ```javascript
     actions: (props, setState) => ({
       setMultiple(value) {
@@ -171,6 +167,18 @@ const {
       }
     })
     ```
+    
+    - They can be `async`. Example :
+    
+    ```javascript
+    actions: {
+      async fetchData() {
+        const data = await fetch('someurl')
+        return { data }
+      }
+    }
+    ```
+    
 - `storage`
   - **Type** : Anything as long as it has `getItem` and `setItem` properties (see [localStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage))
   - **Default value** : `window.localStorage`
