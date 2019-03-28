@@ -95,6 +95,83 @@ Now when you type something and refresh the page, **nothing is lost**. In the ba
 
 ## API
 
+### Default import
+
+The default import from the `repersist` package is a function taking a few options, creating a global store and returning context handlers, HOCs and hooks to use that store.
+
+```jsx
+import repersist from 'repersist'
+
+const {
+  Provider,
+  Consumer,
+  ActionsConsumer,
+  withStore,
+  withActions,
+  useStore,
+  useActions
+} = repersist({ ...options })
+```
+
+Options are :
+- `init`
+  - **Type** : `Object <key, any> | (props: Object) => Object <key, any>`
+  - **Default value** : `() => ({})`
+  - **Role** : The default state to initialize the store when no persisted state was found, or when the integrity check of the persisted state failed. This can be an object of properties like the classic Component's `state` object, *or* an object factory taking the `props` passed to `<Provider>` as argument.
+- `actions`
+  - **Type** : `Object <key, Function> | (props: Object, setState: Function) => Object <key, Function>`
+  - **Default value** : `() => ({})`
+  - **Role** : The actions to be performed on the store. This can either be an object containing specific functions (like `toggleMenu`, `changePage`, `swapTheme`, etc.), *or* an object factory taking the `props` passed to `<Provider>` and a state setter function as arguments. The arguments of these action functions are the arguments you pass when you call them. Action functions can do several things :
+    - They can be `async`. Example :
+    ```javascript
+    actions: {
+      async fetchData() {
+        const data = await fetch('someurl')
+        return { data }
+      }
+    }
+    ```
+    - They can return an object which will be *merged* into the current state. Example :
+    ```javascript
+    actions: {
+      typeSearch(search) {
+        search = search.trim()
+        return { search }
+      }
+    }
+    ```
+    - They can return a *function* taking the current state as argument and returning an object which will be *merged* into the current state. Example :
+    ```javascript
+    init: {
+      counter: 0
+    },
+    actions: {
+      increment() {
+        console.log('Counter incremented')
+        return ({ counter }) => ({ counter: counter + 1 })
+      }
+    }
+    ```
+    - They can update the state programatically using the state setter function passed as second argument to the actions factory. Example :
+    ```javascript
+    actions: (props, setState) => {
+      setMultiple(value) {
+        const multiple = value * props.factor
+        setState({ multiple })
+      },
+      increment() {
+        setState(({ counter }) => ({ counter: counter + 1 }))
+      },
+      decrement() {
+        // setState can also take a callback, called when the state is updated
+        setState(
+          ({ counter }) => ({ counter: counter - 1 }),
+          () => console.log('Counter decremented')
+        )
+      }
+    }
+    ```
+
 ## Upcoming features
 
 - Optionally being able to use *time intervals* to persist states instead of relying on automatic serialization after each change.
