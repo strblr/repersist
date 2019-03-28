@@ -2,6 +2,7 @@ import React, { Component, createContext, useContext } from 'react'
 import identity from 'lodash/identity'
 import isFunction from 'lodash/isFunction'
 import mapValues from 'lodash/mapValues'
+import assign from 'lodash/assign'
 
 export default ({
   init: init_ = () => ({}),
@@ -130,4 +131,12 @@ export default ({
     useStore,
     useActions
   }
+}
+
+export const combine = (...items) => {
+  const tie = item => isFunction(item) ? item : () => item
+  return (...args) => items.reduce(
+    (acc, item) => assign({}, acc, tie(item)(...args)),
+    {}
+  )
 }
