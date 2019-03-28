@@ -228,6 +228,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   - **Props** :
     - *any* (passed to your `init` and `actions` factories)
   - **Role** : The React context provider for your store. The store will be accessible throughout the entire child React tree of your provider, so using it at root-level might be a good idea :
+  
   ```jsx
   ReactDOM.render(
     <Provider>
