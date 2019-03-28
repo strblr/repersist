@@ -223,6 +223,9 @@ const {
 The `repersist` builder returns a bunch of elements that you will use throughout your app to manipulate your store :
 
 - `Provider`
+  - **Type** : React Component
+  - **Props** :
+    - *any* : passed to your `init` and `actions` factories
   - **Role** : The React context provider for your store. The store will be accessible throughout the entire child React tree of your provider, so using it at root-level might be a good idea :
   ```jsx
   ReactDOM.render(
@@ -255,6 +258,9 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   ```
 - `Consumer`
   - **Type** : React Component
+  - **Props** :
+    - `map` : *(Optional)* A map function, mapping your current state into whatever props your want
+    - `render` or `children` : `(state: Object, actions: Object) => React tree`
   - **Role** : The React context consumer for your store. Following the [render prop pattern](https://reactjs.org/docs/render-props.html) you can access your state and your actions within your components using the `children` or the `render` prop. This component will rerender on state changes. Example (using the `children` prop) :
   ```jsx
   <Consumer>
@@ -268,6 +274,8 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   ```
 - `ActionsConsumer`
   - **Type** : React Component
+  - **Props** :
+    - `render` or `children` : `(actions: Object) => React tree`
   - **Role** : The React context consumer for your actions. Useful if you just want to get your action functions and not rerender on state changes. Example :
   ```jsx
   <ActionsConsumer>
@@ -278,7 +286,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   ```
 - `withStore`
   - **Type** : React higher-order component
-  - **Argument** :
+  - **Arguments** :
     - *(Optional)* A map function, mapping your current state into whatever props your want
   - **Role** : Same as `<Consumer>` but using the [higher-order component pattern](https://reactjs.org/docs/higher-order-components.html). Example :
   ```jsx
@@ -299,7 +307,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   ```
 - `useStore`
   - **Type** : React hook
-  - **Argument** :
+  - **Arguments** :
     - *(Optional)* A map function, mapping your current state into whatever props your want
   - **Role** : Same as `<Consumer>` but using the [hook pattern](https://reactjs.org/docs/hooks-intro.html). Example :
   ```jsx
