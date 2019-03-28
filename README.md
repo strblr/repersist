@@ -20,8 +20,8 @@ You'll start by defining your store in a **config file** :
 import repersist from 'repersist'
 
 const { Provider, Consumer } = repersist({
-  // define a storage key unique to your app
-  storageKey: 'myappkey',
+  // define a storage key unique to your store
+  storageKey: 'mystorekey',
   
   // define a default state
   init: {
