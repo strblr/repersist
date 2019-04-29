@@ -315,7 +315,7 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   - **Type** : Function
   - **Arguments** :
     - *(Optional)* A map function, mapping your current persisted state into whatever your want
-  - **Role** : Reads and parses back your state directly from the storage. This allows you to get your state in a non-reactive way or outside the React tree. Example :
+  - **Role** : Reads and parses back your state directly from the storage. This allows you to get your state (always up-to-date) in a non-reactive way or outside the React tree. Example :
 
   ```javascript
   const currentUser = readStore(({ currentUser }) => currentUser)
