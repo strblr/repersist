@@ -5,8 +5,8 @@ import mapValues from 'lodash/mapValues'
 import assign from 'lodash/assign'
 
 export default ({
-  init: init_ = () => ({}),
-  actions: actions_ = () => ({}),
+  init = {},
+  actions = {},
   storage = typeof window !== 'undefined' && window.localStorage,
   storageKey = 'repersist-store',
   serialize = JSON.stringify,
@@ -14,11 +14,32 @@ export default ({
   integrity = () => true,
   load = identity
 } = {}) => {
-  const init = isFunction(init_) ? init_ : () => init_
-  const actions = isFunction(actions_) ? actions_ : () => actions_
-
+  let state = null
   const StateContext = createContext()
   const ActionsContext = createContext()
+
+  try {
+    // First, we try to fetch a state from the storage
+    let stored = storage && storage.getItem(storageKey)
+    if(!stored)
+      throw new Error()
+    // If there was one, we try to deserialize it and check its integrity
+    stored = deserialize(stored)
+    if(!stored || !integrity(stored))
+      throw new Error()
+    // The fetched state can go through a custom loader
+    stored = load(stored)
+    if(!stored)
+      throw new Error()
+    state = stored
+  }
+  catch(_) {
+    // If the storage recovery failed, we use the default state
+    state = init
+  }
+
+  // We persist our initial state anyway to ensure consistency
+  storage && storage.setItem(storageKey, serialize(state))
 
   /* The Provider injects the global state and the actions into the React tree
      via React's context API */
@@ -26,44 +47,18 @@ export default ({
   class Provider extends Component {
     constructor(props) {
       super(props)
-      try {
-        // First, we try to fetch a state from the storage
-        let stored = storage && storage.getItem(storageKey)
-        if(!stored)
-          throw new Error()
-        // If there was one, we try to deserialize it and check its integrity
-        stored = deserialize(stored)
-        if(!stored || !integrity(stored))
-          throw new Error()
-        // The fetched state can go through a custom loader
-        stored = load(stored)
-        if(!stored)
-          throw new Error()
-        this.state = stored
-      }
-      catch(_) {
-        // If the storage recovery failed, we use the default state
-        this.state = init(props)
-      }
-      // We persist our initial state anyway to ensure consistency
-      storage && storage.setItem(storageKey, serialize(this.state))
+      this.state = state
 
       // We create an extension of setState which ALSO serializes each new state
       // to the storage
-      this.setStateAndSave = (state, callback) => this.setState(state, () => {
-        storage && storage.setItem(storageKey, serialize(this.state))
-        if(callback)
-          callback()
-      })
+      this.saveAndSetState = newState => {
+        storage && storage.setItem(storageKey, serialize({ ...this.state, ...newState }))
+        this.setState(newState)
+      }
 
-      // Provided actions go through this special loader in order to call
-      // setStateAndSave if they were to return a non-undefined value
-      this.actions = mapValues(actions(props, this.setStateAndSave.bind(this)),
-        action => async (...args) => {
-          const newState = await action(...args)
-          if(newState)
-            this.setStateAndSave(newState)
-        }
+      // Provided actions go through this special loader in order to call saveAndSetState
+      this.actions = mapValues(actions, action =>
+        async (...args) => this.saveAndSetState(await action(...args))
       )
     }
 
@@ -122,6 +117,11 @@ export default ({
 
   const useActions = () => useContext(ActionsContext)
 
+  const readPersistedStore = (map = identity) => {
+    let stored = storage && storage.getItem(storageKey)
+    return stored ? map(deserialize(stored)) : {}
+  }
+
   return {
     Provider,
     Consumer,
@@ -129,14 +129,7 @@ export default ({
     withStore,
     withActions,
     useStore,
-    useActions
+    useActions,
+    readStore
   }
-}
-
-export const combine = (...items) => {
-  const tie = item => isFunction(item) ? item : () => item
-  return (...args) => items.reduce(
-    (acc, item) => assign({}, acc, tie(item)(...args)),
-    {}
-  )
 }

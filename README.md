@@ -356,52 +356,6 @@ The `repersist` builder returns a bunch of elements that you will use throughout
   }
   ```
 
-### The `combine` function
-
-You can define your state and actions modularly and join them in one store using the `combine` function. Example :
-
-```javascript
-import repersist, { combine } from 'repersist'
-import { init1, actions1 } from './file1'
-import { init2, actions2 } from './file2'
-
-export default repersist({
-  storageKey: 'mysuperkey',
-  init: combine(init1, init2),
-  actions: combine(actions1, actions2)
-})
-```
-
-```javascript
-// file1.js
-
-export const init1 = props => ({
-  value: props.defaultValue,
-  multiple: props.defaultValue * props.factor
-})
-
-export const actions1 = props => ({
-  setValue(value) {
-    const multiple = value * props.factor
-    return { value, multiple }
-  }
-})
-```
-
-```javascript
-// file2.js
-
-export const init2 = {
-  theme: 'light'
-}
-
-export const actions2 = {
-  switchTheme: () => ({ theme }) => ({
-    theme: theme === 'light' ? 'dark' : 'light'
-  })
-}
-```
-
 ## Upcoming features
 
 - Optionally being able to use *time intervals* to persist states instead of relying on automatic serialization after each change.
