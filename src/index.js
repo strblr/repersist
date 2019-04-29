@@ -117,7 +117,7 @@ export default ({
 
   const useActions = () => useContext(ActionsContext)
 
-  const readPersistedStore = (map = identity) => {
+  const readStore = (map = identity) => {
     let stored = storage && storage.getItem(storageKey)
     return stored ? map(deserialize(stored)) : {}
   }
