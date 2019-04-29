@@ -109,19 +109,20 @@ const {
   withStore,
   withActions,
   useStore,
-  useActions
+  useActions,
+  readStore
 } = repersist({ ...options })
 ```
 
 #### Options
 - `init`
-  - **Type** : `Object | (props: Object) => Object`
-  - **Default value** : `() => ({})`
-  - **Role** : The default state to *initialize* the store when no persisted state was found, or when the integrity check of the persisted state failed. This can be an object like the classic Component's `state` object, *or* an object factory taking the `props` passed to `<Provider>` as argument.
+  - **Type** : `Object`
+  - **Default value** : `{}`
+  - **Role** : The default state to *initialize* the store when no persisted state was found, or when the integrity check of the persisted state failed.
 - `actions`
-  - **Type** : `Object <key, Function> | (props: Object, setState: Function) => Object <key, Function>`
-  - **Default value** : `() => ({})`
-  - **Role** : The actions to be performed on the store. This can either be an object containing specific functions (like `toggleMenu`, `changePage`, `swapTheme`, etc.), *or* an object factory taking the `props` passed to `<Provider>` and a state setter function as arguments. The arguments of these action functions are the arguments you pass when you call them, that's up to you. Action functions can do several things :
+  - **Type** : `Object <key, Function>`
+  - **Default value** : `{}`
+  - **Role** : The actions to be performed on the store. This must be an object containing specific functions (like `toggleMenu`, `changePage`, `incrementCounter`, `swapTheme`, etc.). The arguments of these action functions are the arguments you pass when you call them, that's up to you. Action functions can do several things :
     - They can return an object which will be *merged* into the current state. Example :
 
     ```javascript
@@ -145,27 +146,6 @@ const {
         return ({ counter }) => ({ counter: counter + 1 })
       }
     }
-    ```
-
-    - They can update the state *programatically* using the state setter function passed as second argument to the actions factory. Example :
-
-    ```javascript
-    actions: (props, setState) => ({
-      setMultiple(value) {
-        const multiple = value * props.factor
-        setState({ multiple })
-      },
-      increment() {
-        setState(({ counter }) => ({ counter: counter + 1 }))
-      },
-      decrement() {
-        // setState can also take a callback, called when the state is updated
-        setState(
-          ({ counter }) => ({ counter: counter - 1 }),
-          () => console.log('Counter decremented')
-        )
-      }
-    })
     ```
 
     - They can be `async`. Example :
@@ -234,8 +214,6 @@ The `repersist` builder returns a bunch of elements that you will use throughout
 
 - `Provider`
   - **Type** : React Component
-  - **Props** :
-    - *any* (passed to your `init` and `actions` factories)
   - **Role** : The React context provider for your store. This will *inject* the store into the React tree, so using it at root-level might be a good idea :
 
   ```jsx
@@ -245,29 +223,6 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     </Provider>,
     document.getElementById('root')
   )
-  ```
-
-  You can pass *any* props you want to your provider, and use them in your `init` and `actions` factories :
-
-  ```jsx
-  const { Provider } = repersist({
-    init: props => ({
-      value: props.defaultValue,
-      multiple: props.defaultValue * props.factor
-    }),
-    actions: props => ({
-      setValue(value) {
-        const multiple = value * props.factor
-        return { value, multiple }
-      }
-    })
-  })
-
-  // ...
-
-  <Provider defaultValue={1} factor={3}>
-    <App/>
-  </Provider>
   ```
 
 - `Consumer`
@@ -355,8 +310,15 @@ The `repersist` builder returns a bunch of elements that you will use throughout
     return <button onClick={increment}>Increment me</button>
   }
   ```
+  
+- `readStore`
+  - **Type** : Function
+  - **Arguments** :
+    - *(Optional)* A map function, mapping your current persisted state into whatever your want
+  - **Role** : Reads and parses back your state directly from the storage. This allows you to get your state in a non-reactive way or outside the React tree. Example :
 
-## Upcoming features
-
-- Optionally being able to use *time intervals* to persist states instead of relying on automatic serialization after each change.
-- Provide a local solution comparable to `useState` to manage small, local, persistent states.
+  ```javascript
+  const currentUser = readStore(({ currentUser }) => currentUser)
+  // Same as :
+  const { currentUser } = readStore()
+  ```
