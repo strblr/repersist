@@ -2,7 +2,6 @@ import React, { Component, createContext, useContext } from 'react'
 import identity from 'lodash/identity'
 import isFunction from 'lodash/isFunction'
 import mapValues from 'lodash/mapValues'
-import assign from 'lodash/assign'
 
 export default ({
   init = {},
@@ -51,10 +50,12 @@ export default ({
 
       // We create an extension of setState which ALSO serializes each new state
       // to the storage
-      this.saveAndSetState = newState => {
-        storage && storage.setItem(storageKey, serialize({ ...this.state, ...newState }))
-        this.setState(newState)
-      }
+      this.saveAndSetState = newState => this.setState(oldState => {
+        if(isFunction(newState))
+          newState = newState(oldState)
+        storage && storage.setItem(storageKey, serialize({ ...oldState, ...newState }))
+        return newState
+      })
 
       // Provided actions go through this special loader in order to call saveAndSetState
       this.actions = mapValues(actions, action =>
